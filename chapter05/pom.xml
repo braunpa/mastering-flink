@@ -5,6 +5,18 @@
 	<groupId>com.demo</groupId>
 	<artifactId>chapter05</artifactId>
 	<version>1.0</version>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<packaging>jar</packaging>
 
 	<name>chapter05</name>
@@ -44,6 +56,11 @@
 			<artifactId>flink-connector-kafka-0.9_2.10</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-cep_2.12</artifactId>
+			<version>1.9.0</version>
+		</dependency>
+		<!-- Thanks for using https://jar-download.com -->
 	</dependencies>
 </project>
