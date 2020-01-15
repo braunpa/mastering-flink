@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.util.Collector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,14 +34,7 @@ public class App {
                 .followedBy("middle")
                     .subtype(PlaceEvent.class)
                 .followedBy("end")
-                    .subtype(RiderGetsOutOfTheCarEvent.class)
-                        .where(
-                                new SimpleCondition<RiderGetsOutOfTheCarEvent>() {
-                                    @Override
-                                    public boolean filter(RiderGetsOutOfTheCarEvent value) throws Exception {
-                                        return value.getCAR().checkIfRiderIsInTheCar(value.getRIDER());
-                                    }
-                                });
+                    .subtype(RiderGetsOutOfTheCarEvent.class);
         AfterMatchSkipStrategy.noSkip();
 
 
@@ -52,59 +46,39 @@ public class App {
                                 return parentEvent.carId;
                             }
                         })
-                /**.keyBy(
-                        new KeySelector<ParentEvent, Integer>() {
-                            @Override
-                            public Integer getKey(ParentEvent parentEvent) throws Exception {
-                                if(parentEvent instanceof RiderGetsOutOfTheCarEvent ){
-                                    return ((RiderGetsOutOfTheCarEvent) parentEvent).getRiderId();
-                                }else if(parentEvent instanceof RiderGetsIntoTheCarEvent){
-                                    return ((RiderGetsIntoTheCarEvent) parentEvent).getRiderId();
-                                }
-                                return 0;
-                            }
-                        }
-                )*/
                 , visitedPlacesPattern);
 
-        /*DataStream<VisitedPlacesOfRiderEvent> visitedPlacesOfRiderEventDataStream = visitedPlacesPatternStream
-                .select(new PatternSelectFunction<ParentEvent, VisitedPlacesOfRiderEvent>() {
-                      @Override
-                      public VisitedPlacesOfRiderEvent select(Map<String, ParentEvent> map) throws Exception {
-                          RiderGetsIntoTheCarEvent start = (RiderGetsIntoTheCarEvent) map.get("start");
-                          PlaceEvent middle = (PlaceEvent) map.get("middle");
-                          RiderGetsOutOfTheCarEvent end = (RiderGetsOutOfTheCarEvent) map.get("end");
-                          if(start.getRiderId() == end.getRiderId()){
-                              return new VisitedPlacesOfRiderEvent(start, end, middle);
-                          }
-                          return new VisitedPlacesOfRiderEvent();
-                      }
-                  });*/
+
+        DataStream<VisitedPlacesOfRiderEvent> result = visitedPlacesPatternStream.select(new PatternSelectFunction<ParentEvent, VisitedPlacesOfRiderEvent>() {
+            @Override
+            public VisitedPlacesOfRiderEvent select(Map<String, List<ParentEvent>> map) throws Exception {
+                RiderGetsIntoTheCarEvent start = (RiderGetsIntoTheCarEvent) map.get("start").get(0);
+                PlaceEvent middle = (PlaceEvent) map.get("middle").stream().collect(Collectors.toList());
+                RiderGetsOutOfTheCarEvent end = (RiderGetsOutOfTheCarEvent) map.get("end").get(0);
+                if (start.getRiderId() == end.getRiderId()) {
+                    return new VisitedPlacesOfRiderEvent(start, end, middle);
+                }else{
+                    return new VisitedPlacesOfRiderEvent();
+                }
+            }
+        });
 
 
-        PatternStream<ParentEvent> patternStreamCEP = CEP.pattern(inputEventStreamFromGenerator
-                        .keyBy(
-                                new KeySelector<ParentEvent, Integer>() {
-                                    @Override
-                                    public Integer getKey(ParentEvent parentEvent) throws Exception {
-                                        return parentEvent.carId;
-                                    }
-                                })
-                , visitedPlacesPattern);
 
-        patternStreamCEP.process(new PatternProcessFunction<ParentEvent, VisitedPlacesOfRiderEvent>() {
-                                     @Override
-                                     public void processMatch(Map<String, List<ParentEvent>> map, Context context, Collector<VisitedPlacesOfRiderEvent> collector) throws Exception {
-                                         RiderGetsIntoTheCarEvent start = (RiderGetsIntoTheCarEvent) map.get("start");
-                                         PlaceEvent middle = (PlaceEvent) map.get("middle");
-                                         RiderGetsOutOfTheCarEvent end = (RiderGetsOutOfTheCarEvent) map.get("end");
-                                         if (start.getRiderId() == end.getRiderId()) {
-                                             collector.collect(new VisitedPlacesOfRiderEvent(start, end, middle));
-                                         }
-                                     }
-                                 }).print();
 
-        //inputEventStreamFromGenerator.print();
+        /*patternStreamCEP.process(new PatternProcessFunction<ParentEvent, VisitedPlacesOfRiderEvent>() {
+                 @Override
+                 public void processMatch(Map<String, List<ParentEvent>> map, Context context, Collector<VisitedPlacesOfRiderEvent> collector) throws Exception {
+                     RiderGetsIntoTheCarEvent start = (RiderGetsIntoTheCarEvent) map.get("start");
+                     PlaceEvent middle = (PlaceEvent) map.get("middle");
+                     RiderGetsOutOfTheCarEvent end = (RiderGetsOutOfTheCarEvent) map.get("end");
+                     if (start.getRiderId() == end.getRiderId()) {
+                         collector.collect(new VisitedPlacesOfRiderEvent(start, end, middle));
+                     }
+                 }
+             }).setParallelism(1).print();*/
+
+        inputEventStreamFromGenerator.print();
         //visitedPlacesOfRiderEventDataStream.print();
         env.execute("CEP on Temperature Sensor");
     }
