@@ -1,16 +1,22 @@
 package de.vicio.VisitedPlaces;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class CarEntity {
     private final int CARID;
     private final int CARSEATS;
     private boolean isFull;
-    private ArrayList<Object> passengers = new ArrayList<Object>();
+    private UserEntity lastRider = null;
+    private ArrayList<UserEntity> passengers = new ArrayList<UserEntity>();
 
     public CarEntity(int carSeats){
         CARSEATS = carSeats;
         CARID = this.createCARID();
+    }
+
+    public boolean checkIfRiderIsInTheCar(UserEntity rider){
+        return this.lastRider.getUSERID() == rider.getUSERID();
     }
 
     public boolean passengerGetsIntoTheCar(UserEntity passenger){
@@ -25,6 +31,7 @@ public class CarEntity {
     }
 
     public boolean passengerGetsOutOfTheCar(UserEntity passenger){
+        this.lastRider = passenger;
         passengers.remove(passenger);
         passenger.getsOutOfTheCar();
         isFull=!this.hasSeats();

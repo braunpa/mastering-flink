@@ -21,6 +21,10 @@ public class RiderGetsOutOfTheCarEvent extends ParentEvent{
         return this.RIDER;
     }
 
+    public CarEntity getCAR(){
+        return this.CAR;
+    }
+
     @Override
     public String toString(){
         return "Rider " + this.RIDER.getUSERID() + " ist aus Auto " + this.carId + " ausgestiegen.";
