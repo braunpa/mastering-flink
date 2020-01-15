@@ -1,8 +1,5 @@
 package de.vicio.VisitedPlaces;
 
-import org.apache.flink.shaded.com.google.common.base.Predicates;
-import org.apache.flink.shaded.com.google.common.collect.Collections2;
-
 import java.util.Collection;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -18,7 +15,7 @@ public class EventsGenerator {
     public ParentEvent next() throws Exception {
         double probability = StaticVariables.rand.nextDouble();
 
-        if(probability<0.1){
+        if(probability<StaticVariables.GENERATORPROBABILITY_RIDERINTOCAR){
             try{
                 return this.emitRiderGetsIntoTheCarEvent();
             }catch(Exception e){
@@ -28,7 +25,8 @@ public class EventsGenerator {
                     return this.emitRiderGetsIntoTheCarEvent();
                 }
             }
-        }else if(probability>0.2 && probability<0.4){
+        }else if(probability>StaticVariables.GENERATORPROBABILITY_RIDERINTOCAR &&
+                 probability<StaticVariables.GENERATORPROBABILITY_RIDERINTOCAR+StaticVariables.GENERATORPROBABILITY_RIDEROUTOFCAR){
             try{
                 return this.emitRiderGetsOutOfTheCarEvent();
             }catch(Exception e){

@@ -15,26 +15,25 @@ public class VisitedPlacesOfRiderEvent {
         this.VISITEDPLACES = places;
     }
 
-    public VisitedPlacesOfRiderEvent(RiderGetsIntoTheCarEvent riderGetsInto, RiderGetsOutOfTheCarEvent riderGetsOutof, PlaceEvent places){
-        this.RIDERGETSINTOTHECAREVENT = riderGetsInto;
-        this.RIDERGETSOUTOFTHECAREVENT = riderGetsOutof;
-        this.VISITEDPLACES = Arrays.asList(places);
-    }
-
-    public VisitedPlacesOfRiderEvent(){
-        this.RIDERGETSOUTOFTHECAREVENT = null;
-        this.RIDERGETSINTOTHECAREVENT = null;
-        this.VISITEDPLACES = null;
-    }
-
     @Override
     public String toString(){
-        if(this.RIDERGETSOUTOFTHECAREVENT!=null){
-            return "---------------------------------------------\n" + this.RIDERGETSINTOTHECAREVENT.toString() + "\n"
-                    + this.VISITEDPLACES.get(0).toString() + "\n"
-                    + this.RIDERGETSOUTOFTHECAREVENT.toString() + "\n"
-                    + "---------------------------------------------\n";
-        }
-        return "";
+        return "---------------------------------------------\n" + this.RIDERGETSINTOTHECAREVENT.toString() + "\n"
+                + this.interatePlaces() + "\n"
+                + this.RIDERGETSOUTOFTHECAREVENT.toString() + "\n"
+                + "---------------------------------------------\n";
     }
+
+    private String interatePlaces(){
+        String str="";
+        if(this.VISITEDPLACES.size()>1){
+            for(PlaceEvent place : this.VISITEDPLACES){
+                str += ""+place.getPlace()+", \n";
+            }
+            return str.substring(0,str.length()-2);
+        }else{
+            str = this.VISITEDPLACES.get(0).getPlace();
+        }
+        return str;
+    }
+
 }

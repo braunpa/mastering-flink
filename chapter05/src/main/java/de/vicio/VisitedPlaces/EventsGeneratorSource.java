@@ -23,10 +23,8 @@ public class EventsGeneratorSource extends RichParallelSourceFunction<ParentEven
     @Override
     public void run(SourceContext<ParentEvent> sourceContext) throws Exception {
         final EventsGenerator generator = new EventsGenerator();
-
         while (running) {
             sourceContext.collect(generator.next());
-
             if (delayPerRecordMillis > 0) {
                 Thread.sleep(delayPerRecordMillis);
             }

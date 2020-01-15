@@ -1,5 +1,7 @@
 package de.vicio.VisitedPlaces;
 
+import org.apache.flink.cep.nfa.aftermatch.AfterMatchSkipStrategy;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +15,15 @@ public class StaticVariables {
     protected static int userIDCounter;
     protected static ArrayList<UserEntity> USERS= new ArrayList<UserEntity>();
     protected static ArrayList<CarEntity> CARS= new ArrayList<CarEntity>();
+
+    protected final static int GENERATORDELY = 100;
+    protected final static int GENERATERRORPROBABILITY = 0;
+
+    protected final static AfterMatchSkipStrategy SKIP_STRATEGY = AfterMatchSkipStrategy.skipPastLastEvent();
+
+    protected static final double GENERATORPROBABILITY_RIDERINTOCAR = 0.1;
+    protected static final double GENERATORPROBABILITY_RIDEROUTOFCAR = 0.1;
+
 
 
     public static void init(){
