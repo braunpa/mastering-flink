@@ -15,10 +15,14 @@ import org.apache.flink.util.Collector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class App {
     public static void main(String[] args)throws Exception {
+        initExampleOne();
+
+    }
+
+    private static void initExampleOne()throws Exception{
         final SourceFunction<ParentEvent> source;
         source = new EventsGeneratorSource(StaticVariables.GENERATERRORPROBABILITY, StaticVariables.GENERATORDELY);
 
@@ -27,21 +31,15 @@ public class App {
 
         DataStream<ParentEvent> inputEventStreamFromGenerator = env.addSource(source);
 
-        initExampleOne(inputEventStreamFromGenerator);
+        Pattern<ParentEvent, ?> visitedPlacesPattern = getPattern_ONE();
+        PatternStream<ParentEvent> patternStreamCEP = getPatterStream_ONE(inputEventStreamFromGenerator, visitedPlacesPattern);
 
-        env.execute("CEP on Temperature Sensor");
-    }
-
-    private static void initExampleOne(DataStream<ParentEvent> inputEventStreamFromGenerator){
         inputEventStreamFromGenerator.print();
-
-        Pattern<ParentEvent, ?> visitedPlacesPattern = getPattern();
-        PatternStream<ParentEvent> patternStreamCEP = getPatterStream(inputEventStreamFromGenerator, visitedPlacesPattern);
-
-        getResultOfPatter(patternStreamCEP).print();
+        getResultOfPatter_ONE(patternStreamCEP).print();
+        env.execute("CEP UBER Use Case");
     }
 
-    private static Pattern<ParentEvent, ?> getPattern(){
+    private static Pattern<ParentEvent, ?> getPattern_ONE(){
         return Pattern.<ParentEvent>
                 begin("start", StaticVariables.SKIP_STRATEGY)
                 .subtype(RiderGetsIntoTheCarEvent.class)
@@ -59,7 +57,7 @@ public class App {
                         });
     }
 
-    private static PatternStream<ParentEvent> getPatterStream(DataStream<ParentEvent> inputEventStreamFromGenerator, Pattern<ParentEvent, ?> visitedPlacesPattern ){
+    private static PatternStream<ParentEvent> getPatterStream_ONE(DataStream<ParentEvent> inputEventStreamFromGenerator, Pattern<ParentEvent, ?> visitedPlacesPattern ){
         return CEP.pattern(inputEventStreamFromGenerator
                         .keyBy(
                                 new KeySelector<ParentEvent, Integer>() {
@@ -69,9 +67,8 @@ public class App {
                                     }
                                 })
                 , visitedPlacesPattern);
-
     }
-    private static DataStream<VisitedPlacesOfRiderEvent> getResultOfPatter(PatternStream<ParentEvent> patternStreamCEP){
+    private static DataStream<VisitedPlacesOfRiderEvent> getResultOfPatter_ONE(PatternStream<ParentEvent> patternStreamCEP){
         return patternStreamCEP.process(new PatternProcessFunction<ParentEvent, VisitedPlacesOfRiderEvent>() {
             @Override
             public void processMatch(Map<String, List<ParentEvent>> map, Context context, Collector<VisitedPlacesOfRiderEvent> collector) throws Exception {

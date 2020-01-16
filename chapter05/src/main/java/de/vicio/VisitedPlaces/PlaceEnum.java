@@ -31,5 +31,53 @@ public enum PlaceEnum {
         public String toString(){
             return "Oppenau";
         }
+    },
+    Oberkirch{
+        @Override
+        public String toString(){
+            return "Oberkirch";
+        }
+    },
+    Tiergarten{
+        @Override
+        public String toString(){
+            return "Tiergarten";
+        }
+    },
+    Oedsbach{
+        @Override
+        public String toString(){
+            return "Ödsbach";
+        }
+    },
+    Renchen{
+        @Override
+        public String toString(){
+            return "Renchen";
+        }
+    },
+    Ulm{
+        @Override
+        public String toString(){
+            return "Ulm";
+        }
+    },
+    Saschbach{
+        @Override
+        public String toString(){
+            return "Saschbach";
+        }
+    },
+    Stadelhofen{
+        @Override
+        public String toString(){
+            return "Stadelhofen";
+        }
+    },
+    Buehl{
+        @Override
+        public String toString(){
+            return "Bühl";
+        }
     }
 }

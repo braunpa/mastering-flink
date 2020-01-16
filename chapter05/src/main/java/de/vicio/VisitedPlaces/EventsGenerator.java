@@ -39,8 +39,6 @@ public class EventsGenerator {
         }else{
             return this.emitPlaceEvent();
         }
-
-
     }
 
     private PlaceEvent emitPlaceEvent(){

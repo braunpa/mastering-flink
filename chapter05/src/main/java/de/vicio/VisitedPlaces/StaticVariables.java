@@ -16,7 +16,7 @@ public class StaticVariables {
     protected static ArrayList<UserEntity> USERS= new ArrayList<UserEntity>();
     protected static ArrayList<CarEntity> CARS= new ArrayList<CarEntity>();
 
-    protected final static int GENERATORDELY = 100;
+    protected final static int GENERATORDELY = 1000;
     protected final static int GENERATERRORPROBABILITY = 0;
 
     protected final static AfterMatchSkipStrategy SKIP_STRATEGY = AfterMatchSkipStrategy.skipPastLastEvent();
