@@ -18,11 +18,13 @@ import java.util.Map;
 
 public class App {
     public static void main(String[] args)throws Exception {
-        initExampleOne();
+        initExampleOne(AfterMatchSkipStrategy.skipPastLastEvent());
 
     }
 
-    private static void initExampleOne()throws Exception{
+    private static void initExampleOne(AfterMatchSkipStrategy skipStrategy)throws Exception{
+        StaticVariables.skipStrategy = skipStrategy;
+
         final SourceFunction<ParentEvent> source;
         source = new EventsGeneratorSource(StaticVariables.GENERATERRORPROBABILITY, StaticVariables.GENERATORDELY);
 
@@ -41,7 +43,7 @@ public class App {
 
     private static Pattern<ParentEvent, ?> getPattern_ONE(){
         return Pattern.<ParentEvent>
-                begin("start", StaticVariables.SKIP_STRATEGY)
+                begin("start", StaticVariables.skipStrategy)
                 .subtype(RiderGetsIntoTheCarEvent.class)
                 .followedBy("middle")
                 .subtype(PlaceEvent.class)
